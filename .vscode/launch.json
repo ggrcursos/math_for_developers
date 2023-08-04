@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+       {
+      "name": "AppCollision2D",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mfgd_exec",
+      "cwd": "${workspaceRoot}/",
+      // "stopAtEntry": false,
+      "preLaunchTask": "build",
+      // "launchCompleteCommand": "exec-run",
+      // "targetArchitecture": "arm64"
+    }
+  ]
+}
