@@ -1,0 +1,24 @@
+# C++ build artifacts
+*.o
+*.obj
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.exp
+
+# Compiled executables
+bin/
+
+# Compiled object files
+build/
+
+# macOS build folder
+.DS_Store
+
+# Visual Studio Code specific files
+.vscode/
+
+build/
+

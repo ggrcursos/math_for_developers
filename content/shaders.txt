@@ -1,0 +1,166 @@
+Shader compile output for file: pass.vs timestamp: 1691106588
+ERROR: 0:117: '' :  #version must occur before any other statement in the program
+
+
+Shader text follows:
+
+0: #version 150
+1: #define USE_MULTISAMPLE_TEXTURES 1
+2: #if 0//defined(USE_MULTISAMPLE_TEXTURES)
+3: #define tsampler2D sampler2DMS
+4: //#extension GL_ARB_texture_multisample : enable
+5: //#extension GL_ARB_sample_shading : require
+6: 
+7: vec4 ttexture(tsampler2D iSampler, vec2 vecCoordinates)
+8: {
+9: 	vec2 ivecCoords = vecCoordinates*textureSize(iSampler);
+10: 	return texelFetch(iSampler, ivec2(ivecCoords), 0);//gl_SampleID);
+11: }
+12: #else
+13: #define tsampler2D sampler2D
+14: 
+15: vec4 ttexture(tsampler2D iSampler, vec2 vecCoordinates)
+16: {
+17: 	return texture(iSampler, vecCoordinates);
+18: }
+19: #endif
+20: 
+21: // These common functions will be included in the build of every other shader.
+22: 
+23: float RemapVal(float flInput, float flInLo, float flInHi, float flOutLo, float flOutHi)
+24: {
+25: 	return (((flInput-flInLo) / (flInHi-flInLo)) * (flOutHi-flOutLo)) + flOutLo;
+26: }
+27: 
+28: float RemapValClamped(float flInput, float flInLo, float flInHi, float flOutLo, float flOutHi)
+29: {
+30: 	if (flInput < flInLo)
+31: 		return flOutLo;
+32: 	if (flInput > flInHi)
+33: 		return flOutHi;
+34: 	return (((flInput-flInLo) / (flInHi-flInLo)) * (flOutHi-flOutLo)) + flOutLo;
+35: }
+36: 
+37: float Clamped(float flInput, float flLo, float flHi)
+38: {
+39: 	if (flInput < flLo)
+40: 		return flLo;
+41: 	if (flInput > flHi)
+42: 		return flHi;
+43: 	return flInput;
+44: }
+45: 
+46: float LengthSqr(vec3 v)
+47: {
+48: 	return v.x*v.x + v.y*v.y + v.z*v.z;
+49: }
+50: 
+51: float LengthSqr(vec2 v)
+52: {
+53: 	return v.x*v.x + v.y*v.y;
+54: }
+55: 
+56: float Length2DSqr(vec3 v)
+57: {
+58: 	return v.x*v.x + v.z*v.z;
+59: }
+60: 
+61: float Lerp(float x, float flLerp)
+62: {
+63: 	if (flLerp == 0.5)
+64: 		return x;
+65: 
+66: 	return pow(x, log(flLerp) * -1.4427);
+67: }
+68: 
+69: float DistanceToLineSegmentSqr(vec3 p, vec3 v1, vec3 v2)
+70: {
+71: 	float flResult;
+72: 	vec3 v = v2 - v1;
+73: 	vec3 w = p - v1;
+74: 	float c1 = dot(w, v);
+75: 	if (c1 < 0.0)
+76: 		flResult = LengthSqr(v1-p);
+77: 	else
+78: 	{
+79: 		float c2 = dot(v, v);
+80: 		if (c2 < c1)
+81: 			flResult = LengthSqr(v2-p);
+82: 		else
+83: 		{
+84: 			float b = c1/c2;
+85: 			vec3 vb = v1 + v*b;
+86: 			flResult = LengthSqr(vb - p);
+87: 		}
+88: 	}
+89: 	return flResult;
+90: }
+91: 
+92: float AngleDifference(float a, float b)
+93: {
+94: 	float flYawDifference = a - b;
+95: 	if ( a > b )
+96: 		while ( flYawDifference >= 180.0 )
+97: 			flYawDifference -= 360.0;
+98: 	else
+99: 		while ( flYawDifference <= -180.0 )
+100: 			flYawDifference += 360.0;
+101: 	return flYawDifference;
+102: }
+103: 
+104: mat4 InvertTR(mat4 m)
+105: {
+106: 	mat4 mInverse = m;
+107: 	mInverse[3] = vec4(0.0, 0.0, 0.0, 1.0);
+108: 	mInverse = -transpose(mInverse);
+109: 	mInverse[3] = -m[3];
+110: 
+111: 	return mInverse;
+112: }
+113: uniform mat4x4 mProjection;
+114: uniform mat4x4 mView;
+115: uniform mat4x4 mGlobal;
+116: #version 330
+117: 
+118: uniform vec4 vecColor;
+119: in vec3 vecPosition;
+120: in vec3 vecNormal;
+121: in vec3 vecTangent;
+122: in vec3 vecBitangent;
+123: in vec2 vecTexCoord0;
+124: in vec3 vecVertexColor;
+125: 
+126: out vec3 vecFragmentLocalPosition;
+127: out vec3 vecFragmentGlobalPosition;
+128: out vec3 vecFragmentNormal;
+129: out vec3 vecFragmentTangent;
+130: out vec3 vecFragmentBitangent;
+131: out vec2 vecFragmentTexCoord0;
+132: out vec3 vecFragmentColor;
+133: 
+134: void main()
+135: {
+136: 	vec4 vecGlobal = mGlobal * vec4(vecPosition, 1.0);
+137: 
+138: 	vecFragmentLocalPosition = vecPosition;
+139: 	vecFragmentGlobalPosition = vecGlobal.xyz;
+140: 	vecFragmentNormal = vecNormal;
+141: 	vecFragmentTangent = vecTangent;
+142: 	vecFragmentBitangent = vecBitangent;
+143: 	vecFragmentTexCoord0 = vec2(vecTexCoord0.x, 1-vecTexCoord0.y);
+144: 	vecFragmentColor = vecVertexColor;
+145: 
+146: 	gl_Position = mProjection * mView * vecGlobal;
+147: }
+148: 
+
+
+Shader compile output for file: link timestamp: 1691106588
+ERROR: One or more attached shaders not successfully compiled
+
+
+Shader text follows:
+
+0: link
+
+
