@@ -75,11 +75,11 @@ CShaderLibrary::~CShaderLibrary()
 	for (size_t i = 0; i < m_aShaders.size(); i++)
 	{
 		CShader* pShader = &m_aShaders[i];
-		GLCall(glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iVShader));
-		GLCall(glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iFShader));
-		GLCall(glDeleteProgram((GLuint)pShader->m_iProgram));
-		GLCall(glDeleteShader((GLuint)pShader->m_iVShader));
-		GLCall(glDeleteShader((GLuint)pShader->m_iFShader));
+		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iVShader);
+		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iFShader);
+		glDeleteProgram((GLuint)pShader->m_iProgram);
+		glDeleteShader((GLuint)pShader->m_iVShader);
+		glDeleteShader((GLuint)pShader->m_iFShader);
 	}
 
 	s_pShaderLibrary = NULL;
@@ -347,52 +347,52 @@ bool CShader::Compile()
 
 	size_t iVShader = glCreateShader(GL_VERTEX_SHADER);
 	const char* pszStr = sVertexShader.c_str();
-	GLCall(glShaderSource((GLuint)iVShader, 1, &pszStr, NULL));
-	GLCall(glCompileShader((GLuint)iVShader));
+	glShaderSource((GLuint)iVShader, 1, &pszStr, NULL);
+	glCompileShader((GLuint)iVShader);
 
 	int iVertexCompiled;
-	GLCall(glGetShaderiv((GLuint)iVShader, GL_COMPILE_STATUS, &iVertexCompiled));
+	glGetShaderiv((GLuint)iVShader, GL_COMPILE_STATUS, &iVertexCompiled);
 
 	if (iVertexCompiled != GL_TRUE || Application()->HasCommandLineSwitch("--debug-gl"))
 	{
 		int iLogLength = 0;
 		char szLog[1024];
-		GLCall(glGetShaderInfoLog((GLuint)iVShader, 1024, &iLogLength, szLog));
+		glGetShaderInfoLog((GLuint)iVShader, 1024, &iLogLength, szLog);
 		CShaderLibrary::Get()->WriteLog(m_sVertexFile + ".vs", szLog, pszStr);
 	}
 
 	size_t iFShader = glCreateShader(GL_FRAGMENT_SHADER);
 	pszStr = sFragmentShader.c_str();
-	GLCall(glShaderSource((GLuint)iFShader, 1, &pszStr, NULL));
-	GLCall(glCompileShader((GLuint)iFShader));
+	glShaderSource((GLuint)iFShader, 1, &pszStr, NULL);
+	glCompileShader((GLuint)iFShader);
 
 	int iFragmentCompiled;
-	GLCall(glGetShaderiv((GLuint)iFShader, GL_COMPILE_STATUS, &iFragmentCompiled));
+	glGetShaderiv((GLuint)iFShader, GL_COMPILE_STATUS, &iFragmentCompiled);
 
 	if (iFragmentCompiled != GL_TRUE || Application()->HasCommandLineSwitch("--debug-gl"))
 	{
 		int iLogLength = 0;
 		char szLog[1024];
-		GLCall(glGetShaderInfoLog((GLuint)iFShader, 1024, &iLogLength, szLog));
+		glGetShaderInfoLog((GLuint)iFShader, 1024, &iLogLength, szLog);
 		CShaderLibrary::Get()->WriteLog(m_sFragmentFile + ".fs", szLog, pszStr);
 	}
 
 	size_t iProgram = glCreateProgram();
 
-	GLCall(glBindAttribLocation(iProgram, 0, "vecPosition"));		// Force position at location 0. ATI cards won't work without this.
+	glBindAttribLocation(iProgram, 0, "vecPosition");		// Force position at location 0. ATI cards won't work without this.
 
-	GLCall(glAttachShader((GLuint)iProgram, (GLuint)iVShader));
-	GLCall(glAttachShader((GLuint)iProgram, (GLuint)iFShader));
-	GLCall(glLinkProgram((GLuint)iProgram));
+	glAttachShader((GLuint)iProgram, (GLuint)iVShader);
+	glAttachShader((GLuint)iProgram, (GLuint)iFShader);
+	glLinkProgram((GLuint)iProgram);
 
 	int iProgramLinked;
-	GLCall(glGetProgramiv((GLuint)iProgram, GL_LINK_STATUS, &iProgramLinked));
+	glGetProgramiv((GLuint)iProgram, GL_LINK_STATUS, &iProgramLinked);
 
 	if (iProgramLinked != GL_TRUE || Application()->HasCommandLineSwitch("--debug-gl"))
 	{
 		int iLogLength = 0;
 		char szLog[1024];
-		GLCall(glGetProgramInfoLog((GLuint)iProgram, 1024, &iLogLength, szLog));
+		glGetProgramInfoLog((GLuint)iProgram, 1024, &iLogLength, szLog);
 		CShaderLibrary::Get()->WriteLog("link", szLog, "link");
 	}
 
@@ -418,12 +418,12 @@ bool CShader::Compile()
 		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, sprintf("vecTexCoord%d", i).c_str());
 	m_iColorAttribute = glGetAttribLocation(m_iProgram, "vecVertexColor");
 
-	GLCall(glBindFragDataLocation(m_iProgram, 0, "vecOutputColor"));
+	glBindFragDataLocation(m_iProgram, 0, "vecOutputColor");
 
 	TAssert(m_iPositionAttribute != ~0);
 
 	int iNumUniforms;
-	GLCall(glGetProgramiv(m_iProgram, GL_ACTIVE_UNIFORMS, &iNumUniforms));
+	glGetProgramiv(m_iProgram, GL_ACTIVE_UNIFORMS, &iNumUniforms);
 
 	char szUniformName[256];
 	GLsizei iLength;
@@ -431,7 +431,7 @@ bool CShader::Compile()
 	GLenum iType;
 	for (int i = 0; i < iNumUniforms; i++)
 	{
-		GLCall(glGetActiveUniform(m_iProgram, i, sizeof(szUniformName), &iLength, &iSize, &iType, szUniformName));
+		glGetActiveUniform(m_iProgram, i, sizeof(szUniformName), &iLength, &iSize, &iType, szUniformName);
 
 		string sUniformName = szUniformName;
 		if (sUniformName == "mProjection")
@@ -548,11 +548,11 @@ bool CShader::Compile()
 
 void CShader::Destroy()
 {
-	GLCall(glDetachShader((GLuint)m_iProgram, (GLuint)m_iVShader));
-	GLCall(glDetachShader((GLuint)m_iProgram, (GLuint)m_iFShader));
-	GLCall(glDeleteShader((GLuint)m_iVShader));
-	GLCall(glDeleteShader((GLuint)m_iFShader));
-	GLCall(glDeleteProgram((GLuint)m_iProgram));
+	glDetachShader((GLuint)m_iProgram, (GLuint)m_iVShader);
+	glDetachShader((GLuint)m_iProgram, (GLuint)m_iFShader);
+	glDeleteShader((GLuint)m_iVShader);
+	glDeleteShader((GLuint)m_iFShader);
+	glDeleteProgram((GLuint)m_iProgram);
 }
 
 string CShader::FindType(const string& sName) const

@@ -4,7 +4,7 @@
       {
         "type": "shell",
         "label": "build",
-        "command": "cd build; cmake -DCMAKE_VERBOSE_MAKEFILE=OFF   ../ && make  -j10 ;",
+        "command": "cd build; cmake  ../ && make  -j10 ;",
         "group": "build",
         "problemMatcher": []
       },

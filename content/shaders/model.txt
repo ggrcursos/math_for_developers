@@ -6,4 +6,5 @@ Defaults
 {
 	bDiffuse: no
 	vecColor: 1 1 1 1
+	flAlpha: 1
 }

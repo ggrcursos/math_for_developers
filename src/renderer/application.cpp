@@ -37,7 +37,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
-  //  glViewport(0, 0, width, height);
+   // glViewport(0, 0, width, height);
 }
 // #include "glad.h"
 CApplication* CApplication::s_pApplication = NULL;
@@ -55,7 +55,7 @@ CApplication::CApplication(int argc, char** argv)
 	m_pRenderer = NULL;
 	m_pConsole = NULL;
 
-	SetMouseCursorEnabled(true);
+	//SetMouseCursorEnabled(true);
 	m_flLastMousePress = -1;
 }
 
@@ -461,7 +461,7 @@ void CApplication::KeyEvent(int c, int e)
 {
 	if (e == GLFW_PRESS)
 		KeyPress(MapKey(c));
-	else
+	else if(e == GLFW_RELEASE)
 		KeyRelease(MapKey(c));
 }
 
