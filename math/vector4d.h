@@ -17,83 +17,92 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #pragma once
 
-#include <vector.h>
+#include <cmath>
 
-class Vector2D
+#include <vector.h>
+#include <color.h>
+
+class Vector4D
 {
 public:
-				Vector2D();
-				Vector2D(float x, float y);
-				Vector2D(const Vector& v);
+				Vector4D();
+				Vector4D(const Vector& v);
+				Vector4D(const Vector& v, float w);
+				Vector4D(const Color& c);
+				Vector4D(float x, float y, float z, float w);
+				Vector4D(const float* xyzw);
 
 public:
-	float	Length() const;
-	float	LengthSqr() const;
+	const Vector4D	operator+(const Vector4D& v) const;
+	const Vector4D	operator-(const Vector4D& v) const;
+	const Vector4D	operator*(float s) const;
 
-	const Vector2D	operator+(const Vector2D& v) const;
-	const Vector2D	operator-(const Vector2D& v) const;
-	const Vector2D	operator*(float s) const;
-	const Vector2D	operator/(float s) const;
+	bool	operator==(const Vector4D& v) const
+	{
+		float flEp = 0.000001f;
+		return std::fabs(v.x - x) < flEp && std::fabs(v.y - y) < flEp && std::fabs(v.z - z) < flEp && std::fabs(v.w - w) < flEp;
+	}
 
-	void	operator+=(const Vector2D &v);
-	void	operator-=(const Vector2D &v);
+	operator float*()
+	{
+		return(&x);
+	}
 
-	float	x, y;
+	operator const float*() const
+	{
+		return(&x);
+	}
+
+	float	x, y, z, w;
 };
 
-inline Vector2D::Vector2D()
-	: x(0), y(0)
+inline Vector4D::Vector4D()
+	: x(0), y(0), z(0), w(0)
 {
 }
 
-inline Vector2D::Vector2D(float X, float Y)
-	: x(X), y(Y)
+inline Vector4D::Vector4D(const Vector& v)
+	: x(v.x), y(v.y), z(v.z), w(0)
 {
 }
 
-inline Vector2D::Vector2D(const Vector& v)
-	: x(v.x), y(v.y)
+inline Vector4D::Vector4D(const Vector& v, float W)
+	: x(v.x), y(v.y), z(v.z), w(W)
 {
 }
 
-inline float Vector2D::Length() const
+inline Vector4D::Vector4D(const Color& c)
+	: x(((float)c.r())/255), y(((float)c.g())/255), z(((float)c.b())/255), w(((float)c.a())/255)
 {
-	return sqrt(x*x + y*y);
 }
 
-inline float Vector2D::LengthSqr() const
+inline Vector4D::Vector4D(float X, float Y, float Z, float W)
+	: x(X), y(Y), z(Z), w(W)
 {
-	return x*x + y*y;
 }
 
-inline const Vector2D Vector2D::operator+(const Vector2D& v) const
+inline Vector4D::Vector4D(const float* xyzw)
+	: x(*xyzw), y(*(xyzw+1)), z(*(xyzw+2)), w(*(xyzw+3))
 {
-	return Vector2D(x+v.x, y+v.y);
 }
 
-inline const Vector2D Vector2D::operator-(const Vector2D& v) const
+inline const Vector4D Vector4D::operator+(const Vector4D& v) const
 {
-	return Vector2D(x-v.x, y-v.y);
+	return Vector4D(x+v.x, y+v.y, z+v.z, w+v.w);
 }
 
-inline const Vector2D Vector2D::operator*(float s) const
+inline const Vector4D Vector4D::operator-(const Vector4D& v) const
 {
-	return Vector2D(x*s, y*s);
+	return Vector4D(x-v.x, y-v.y, z-v.z, w-v.w);
 }
 
-inline const Vector2D Vector2D::operator/(float s) const
+inline const Vector4D Vector4D::operator*(float s) const
 {
-	return Vector2D(x/s, y/s);
+	return Vector4D(s*x, s*y, s*z, s*w);
 }
 
-inline void Vector2D::operator+=(const Vector2D& v)
+inline const Vector4D operator*(float s, const Vector4D& v)
 {
-	x += v.x;
-	y += v.y;
+	return Vector4D(s*v.x, s*v.y, s*v.z, s*v.w);
 }
 
-inline void Vector2D::operator-=(const Vector2D& v)
-{
-	x -= v.x;
-	y -= v.y;
-}

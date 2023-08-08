@@ -63,7 +63,7 @@ public:
 	virtual void	Initialize();
 	void			LoadShaders();
 
-	void InitBunny();
+ 
 	int  GetBunnyVerts();
 	int  GetBunnyNumVerts();
 	int  BunnyPositionOffsetBytes();

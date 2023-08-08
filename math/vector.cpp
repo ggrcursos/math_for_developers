@@ -15,85 +15,94 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include "vector.h"
 
-#include <vector.h>
+#include <cmath>
 
-class Vector2D
-{
-public:
-				Vector2D();
-				Vector2D(float x, float y);
-				Vector2D(const Vector& v);
-
-public:
-	float	Length() const;
-	float	LengthSqr() const;
-
-	const Vector2D	operator+(const Vector2D& v) const;
-	const Vector2D	operator-(const Vector2D& v) const;
-	const Vector2D	operator*(float s) const;
-	const Vector2D	operator/(float s) const;
-
-	void	operator+=(const Vector2D &v);
-	void	operator-=(const Vector2D &v);
-
-	float	x, y;
-};
-
-inline Vector2D::Vector2D()
-	: x(0), y(0)
+Vector::Vector(const Point& p)
+	: x(p.x), y(p.y), z(p.z)
 {
 }
 
-inline Vector2D::Vector2D(float X, float Y)
-	: x(X), y(Y)
+Vector Vector::operator-() const
 {
+	return Vector(-x, -y, -z);
 }
 
-inline Vector2D::Vector2D(const Vector& v)
-	: x(v.x), y(v.y)
+Vector Vector::operator+(const Vector& v) const
 {
+	return Vector(x + v.x, y + v.y, z + v.z);
 }
 
-inline float Vector2D::Length() const
+Vector Vector::operator-(const Vector& v) const
 {
-	return sqrt(x*x + y*y);
+	return Vector(x - v.x, y - v.y, z - v.z);
 }
 
-inline float Vector2D::LengthSqr() const
+Vector Vector::Normalized() const
 {
-	return x*x + y*y;
+	return (*this) / Length();
 }
 
-inline const Vector2D Vector2D::operator+(const Vector2D& v) const
+void Vector::Normalize()
 {
-	return Vector2D(x+v.x, y+v.y);
+	(*this) = (*this) / Length();
 }
 
-inline const Vector2D Vector2D::operator-(const Vector2D& v) const
+Vector Vector::operator*(float s) const
 {
-	return Vector2D(x-v.x, y-v.y);
+	return Vector(x * s, y * s, z * s);
 }
 
-inline const Vector2D Vector2D::operator*(float s) const
+Vector Vector::operator/(float s) const
 {
-	return Vector2D(x*s, y*s);
+	return Vector(x / s, y / s, z / s);
 }
 
-inline const Vector2D Vector2D::operator/(float s) const
+float Vector::Length() const
 {
-	return Vector2D(x/s, y/s);
+	return sqrt(x*x + y*y + z*z);
 }
 
-inline void Vector2D::operator+=(const Vector2D& v)
+float Vector::LengthSqr() const
 {
-	x += v.x;
-	y += v.y;
+	return (x*x + y*y + z*z);
 }
 
-inline void Vector2D::operator-=(const Vector2D& v)
+float Vector::Dot(const Vector& v) const
 {
-	x -= v.x;
-	y -= v.y;
+	return x*v.x + y*v.y + z*v.z;
+}
+
+// Cross-product http://www.youtube.com/watch?v=FT7MShdqK6w
+Vector Vector::Cross(const Vector& v) const
+{
+	Vector c;
+
+	c.x = y*v.z - z*v.y;
+	c.y = z*v.x - x*v.z;
+	c.z = x*v.y - y*v.x;
+
+	return c;
+}
+
+Vector operator-(Point a, Point b)
+{
+	Vector v;
+
+	v.x = a.x - b.x;
+	v.y = a.y - b.y;
+	v.z = a.z - b.z;
+
+	return v;
+}
+
+Point Point::operator+(const Vector& v) const
+{
+	return Point(x + v.x, y + v.y, z + v.z);
+}
+
+Point Point::operator-(const Vector& v) const
+{
+	return Point(x - v.x, y - v.y, z - v.z);
 }

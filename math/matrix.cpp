@@ -25,18 +25,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #define M_PI 3.14159265358979323846f
 #endif
 
-// Keeping the cross product here until we learn about it, then it will go back into the Vector class.
-Vector CrossProduct(const Vector& a, const Vector& b)
-{
-	Vector r;
-
-	r.x = a.y*b.z - a.z*b.y;
-	r.y = a.z*b.x - a.x*b.z;
-	r.z = a.x*b.y - a.y*b.x;
-
-	return r;
-}
-
 Matrix4x4::Matrix4x4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
 {
 	Init(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
@@ -66,6 +54,14 @@ Matrix4x4::Matrix4x4(const Vector& vecForward, const Vector& vecUp, const Vector
 	m[1][3] = 0;
 	m[2][3] = 0;
 	m[3][3] = 1;
+}
+
+Matrix4x4::Matrix4x4(const Vector4D& vecForward, const Vector4D& vecUp, const Vector4D& vecRight, const Vector4D& vecPosition)
+{
+	SetForwardVector(vecForward);
+	SetUpVector(vecUp);
+	SetRightVector(vecRight);
+	SetTranslation(vecPosition);
 }
 
 void Matrix4x4::Identity()
@@ -206,6 +202,14 @@ void Matrix4x4::SetTranslation(const Vector& vecPos)
 	m[3][2] = vecPos.z;
 }
 
+void Matrix4x4::SetTranslation(const Vector4D& vecPos)
+{
+	m[3][0] = vecPos.x;
+	m[3][1] = vecPos.y;
+	m[3][2] = vecPos.z;
+	m[3][3] = vecPos.w;
+}
+
 void Matrix4x4::SetRotation(float flAngle, const Vector& v)
 {
 	// Normalize beforehand
@@ -220,8 +224,8 @@ void Matrix4x4::SetRotation(float flAngle, const Vector& v)
 	float y = v.y;
 	float z = v.z;
 
-	float c = cos(flAngle*M_PI/180);
-	float s = sin(flAngle*M_PI/180);
+	float c = cos(flAngle*(float)M_PI/180);
+	float s = sin(flAngle*(float)M_PI/180);
 	float t = 1-c;
 
 	m[0][0] = x*x*t + c;
@@ -257,9 +261,36 @@ void Matrix4x4::SetReflection(const Vector& vecPlane)
 	m[1][2] = m[2][1] = -2 * vecPlane.y * vecPlane.z;
 }
 
+// Create a perspective projection matrix.
+// http://youtu.be/dul0mui292Q
 Matrix4x4 Matrix4x4::ProjectPerspective(float flFOV, float flAspectRatio, float flNear, float flFar)
 {
-	float flRight = flNear * tan(flFOV * M_PI / 360);
+	float flTanThetaOver2 = tan(flFOV * (float)M_PI / 360);
+
+	Matrix4x4 m;
+
+	m.Identity();
+
+	// X and Y scaling
+	m.m[0][0] = 1/flTanThetaOver2;
+	m.m[1][1] = flAspectRatio/flTanThetaOver2;
+
+	// Z coordinate makes z -1 when we're on the near plane and +1 on the far plane
+	m.m[2][2] = (flNear + flFar)/(flNear - flFar);
+	m.m[3][2] = 2 * flNear * flFar / (flNear - flFar);
+
+	// W = -1 so that we have [x y z -z], a homogenous vector that becomes [-x/z -y/z -1] after division by w.
+	m.m[2][3] = -1;
+
+	// Must zero this out, the identity has it as 1.
+	m.m[3][3] = 0;
+
+	return m;
+}
+
+Matrix4x4 Matrix4x4::ProjectFrustum(float flFOV, float flAspectRatio, float flNear, float flFar)
+{
+	float flRight = flNear * tan(flFOV * (float)M_PI / 360);
 	float flLeft = -flRight;
 
 	float flBottom = flLeft / flAspectRatio;
@@ -314,24 +345,21 @@ Matrix4x4 Matrix4x4::ProjectOrthographic(float flLeft, float flRight, float flBo
 	return m;
 }
 
+// In order to do rendering we have to transform our global coordinates to be
+// in the local space of the camera, with the specific requirement that the
+// camera looks down the -Z axis. In this function we construct a matrix for
+// this transformation. http://youtu.be/3ZmqJb7J5wE
 Matrix4x4 Matrix4x4::ConstructCameraView(const Vector& vecPosition, const Vector& vecDirection, const Vector& vecUp)
 {
-	Matrix4x4 m;
-	
-	m.Identity();
-
 	TAssert(fabs(vecDirection.LengthSqr()-1) < 0.0001f);
 
-	Vector vecCamSide = CrossProduct(vecDirection, vecUp).Normalized();
-	Vector vecCamUp = CrossProduct(vecCamSide, vecDirection);
+	Vector vecCamRight = vecDirection.Cross(vecUp).Normalized();
+	Vector vecCamUp = vecCamRight.Cross(vecDirection);
 
-	m.SetForwardVector(Vector(vecCamSide.x, vecCamUp.x, -vecDirection.x));
-	m.SetUpVector(Vector(vecCamSide.y, vecCamUp.y, -vecDirection.y));
-	m.SetRightVector(Vector(vecCamSide.z, vecCamUp.z, -vecDirection.z));
-
-	m.AddTranslation(-vecPosition);
-
-	return m;
+	// OpenGL wants to be looking down the -Z axis. So, pass -vecDirection into the Z position.
+	// Then invert the matrix because we're going from global space into local camera space.
+	// Easy!
+	return Matrix4x4(vecCamRight, vecCamUp, -vecDirection, vecPosition).InvertedTR();
 }
 
 Matrix4x4 Matrix4x4::operator+=(const Vector& v)
@@ -449,6 +477,7 @@ Vector Matrix4x4::GetScale() const
 	return vecReturn;
 }
 
+// Used for vectors which represent a position.
 Vector Matrix4x4::operator*(const Vector& v) const
 {
 	// [a b c x][X] 
@@ -463,7 +492,8 @@ Vector Matrix4x4::operator*(const Vector& v) const
 	return vecResult;
 }
 
-Vector Matrix4x4::TransformVector(const Vector& v) const
+// Used for vectors which represent a direction. http://youtu.be/B6d97neDPBk
+Vector Matrix4x4::TransformDirection(const Vector& v) const
 {
 	// [a b c][X] 
 	// [d e f][Y] = [aX+bY+cZ dX+eY+fZ gX+hY+iZ]
@@ -537,44 +567,76 @@ void Matrix4x4::SetRightVector(const Vector& v)
 	m[2][2] = v.z;
 }
 
-// Not a true inversion, only works if the matrix is a translation/rotation matrix.
-void Matrix4x4::InvertRT()
+void Matrix4x4::SetForwardVector(const Vector4D& v)
 {
-	TAssert(fabs(GetForwardVector().LengthSqr() - 1) < 0.00001f);
-	TAssert(fabs(GetUpVector().LengthSqr() - 1) < 0.00001f);
-	TAssert(fabs(GetRightVector().LengthSqr() - 1) < 0.00001f);
-
-	Matrix4x4 t;
-
-	for (int h = 0; h < 3; h++)
-		for (int v = 0; v < 3; v++)
-			t.m[h][v] = m[v][h];
-
-	Vector vecTranslation = GetTranslation();
-
-	Init(t);
-
-	SetTranslation(t*(-vecTranslation));
+	m[0][0] = v.x;
+	m[0][1] = v.y;
+	m[0][2] = v.z;
+	m[0][3] = v.w;
 }
 
-Matrix4x4 Matrix4x4::InvertedRT() const
+void Matrix4x4::SetUpVector(const Vector4D& v)
 {
-	TAssert(fabs(GetForwardVector().LengthSqr() - 1) < 0.00001f);
+	m[1][0] = v.x;
+	m[1][1] = v.y;
+	m[1][2] = v.z;
+	m[1][3] = v.w;
+}
+
+void Matrix4x4::SetRightVector(const Vector4D& v)
+{
+	m[2][0] = v.x;
+	m[2][1] = v.y;
+	m[2][2] = v.z;
+	m[2][3] = v.w;
+}
+
+// Use the information embedded in a matrix to create its inverse.
+// http://youtu.be/7CxKAtWqHC8
+Matrix4x4 Matrix4x4::InvertedTR() const
+{
+	// This method can only be used if the matrix is a translation/rotation matrix.
+	// The below asserts will trigger if this is not the case.
+	TAssert(fabs(GetForwardVector().LengthSqr() - 1) < 0.00001f);   // Each basis vector should be length 1.
 	TAssert(fabs(GetUpVector().LengthSqr() - 1) < 0.00001f);
 	TAssert(fabs(GetRightVector().LengthSqr() - 1) < 0.00001f);
+	TAssert(fabs(GetForwardVector().Dot(GetUpVector())) < 0.0001f); // All vectors should be orthogonal.
+	TAssert(fabs(GetForwardVector().Dot(GetRightVector())) < 0.0001f);
+	TAssert(fabs(GetRightVector().Dot(GetUpVector())) < 0.0001f);
 
-	Matrix4x4 r;
+	Matrix4x4 M;
 
-	for (int h = 0; h < 3; h++)
-		for (int v = 0; v < 3; v++)
-			r.m[h][v] = m[v][h];
+	// Create the transposed upper 3x3 matrix
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			M.m[i][j] = m[j][i];
 
-	r.SetTranslation(r*(-GetTranslation()));
+	// The new matrix translation = -Rt
+	M.SetTranslation(-(M*GetTranslation()));
 
-	return r;
+	return M;
 }
 
 float Matrix4x4::Trace() const
 {
 	return m[0][0] + m[1][1] + m[2][2];
+}
+
+// Since we're mucking around with matrices so much, the basis vectors can
+// sometimes get slightly longer or shorter than unit length because of
+// floating point precision problems. This function re-normalizes the basis
+// vectors to make sure we always have a valid matrix where all basis vectors
+// are unit length and orthogonal. Only call it if you're using a TR matrix
+// and if you're not worried about a performance penalty.
+void Matrix4x4::NormalizeTR()
+{
+	// Keep the forward vector, just make sure it's normal length.
+	SetForwardVector(GetForwardVector().Normalized());
+
+	// The up vector is the second most important vector to keep right.
+	// Do a cross-product to re-calculate it using the forward and right vectors.
+	SetUpVector(GetForwardVector().Cross(-GetRightVector()).Normalized());
+
+	// Finally, re-calculate the right vector.
+	SetRightVector(GetForwardVector().Cross(GetUpVector()).Normalized());
 }

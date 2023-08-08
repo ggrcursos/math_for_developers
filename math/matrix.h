@@ -51,6 +51,7 @@ public:
 	            Matrix4x4(const Matrix4x4& m);
 	explicit    Matrix4x4(float* aflValues);
 	explicit    Matrix4x4(const Vector& vecForward, const Vector& vecUp, const Vector& vecRight, const Vector& vecPosition = Vector(0,0,0));
+	explicit    Matrix4x4(const Vector4D& vecForward, const Vector4D& vecUp, const Vector4D& vecRight, const Vector4D& vecPosition = Vector4D(0,0,0,1));
 
 public:
 	void		Identity();
@@ -68,12 +69,14 @@ public:
 
 	// Set a transformation
 	void		SetTranslation(const Vector& vecPos);
+	void    	SetTranslation(const Vector4D& v);
 	void		SetRotation(float flAngle, const Vector& vecAxis);		// Assumes the axis is a normalized vector.
 	void		SetScale(const Vector& vecScale);
 	void		SetReflection(const Vector& vecPlaneNormal);			// Reflection around a plane with this normal which passes through the center of the local space.
 																		// Assumes the plane normal passed in is normalized.
 
 	static Matrix4x4	ProjectPerspective(float flFOV, float flAspectRatio, float flNear, float flFar);							// Just like gluPerspectives
+	static Matrix4x4	ProjectFrustum(float flFOV, float flAspectRatio, float flNear, float flFar);								// Same as above, different method
 	static Matrix4x4	ProjectFrustum(float flLeft, float flRight, float flBottom, float flTop, float flNear, float flFar);		// Just like glFrustum
 	static Matrix4x4	ProjectOrthographic(float flLeft, float flRight, float flBottom, float flTop, float flNear, float flFar);	// Just like glOrtho
 	static Matrix4x4	ConstructCameraView(const Vector& vecPosition, const Vector& vecDirection, const Vector& vecUp);			// Like gluLookAt but a direction parameter instead of target
@@ -97,11 +100,13 @@ public:
 	Vector		GetTranslation() const;
 	Vector      GetScale() const;
 
-	// Transform a vector
+	// Transform a position vector
 	Vector		operator*(const Vector& v) const;
-	Vector		TransformVector(const Vector& v) const;		// Same as homogenous vector with w=0 transform, no translation.
-															// You want to use this for directional vectors such as normals and velocities because translations will change their length.
-															// It's not immune to scaling though! A matrix with scaling will output a vector of different length than the input.
+
+	// Same as homogenous vector with w=0 transform, no translation.
+	// You want to use this for directional vectors such as normals and velocities because translations will change their length.
+	// It's not immune to scaling though! A matrix with scaling will output a vector of different length than the input.
+	Vector		TransformDirection(const Vector& v) const;
 
 	Vector4D	operator*(const Vector4D& v) const;
 
@@ -114,14 +119,18 @@ public:
 	void		SetForwardVector(const Vector& vecForward);
 	void		SetUpVector(const Vector& vecUp);
 	void		SetRightVector(const Vector& vecRight);
+	void		SetForwardVector(const Vector4D& vecForward);
+	void		SetUpVector(const Vector4D& vecUp);
+	void		SetRightVector(const Vector4D& vecRight);
 	Vector		GetForwardVector() const { return Vector(m[0][0], m[0][1], m[0][2]); }
 	Vector		GetUpVector() const { return Vector(m[1][0], m[1][1], m[1][2]); }
 	Vector		GetRightVector() const { return Vector(m[2][0], m[2][1], m[2][2]); }
 
-	void		InvertRT();
-	Matrix4x4	InvertedRT() const;
+	Matrix4x4	InvertedTR() const;
 
 	float		Trace() const;
+
+	void        NormalizeTR();
 
 	operator float*()
 	{
@@ -136,6 +145,11 @@ public:
 	struct MVector4D
 	{
 		float x, y, z, w;
+
+		float Length() const
+		{
+			return sqrt(x*x + y*y + z*z + w*w);
+		}
 	};
 
 	union {

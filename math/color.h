@@ -15,85 +15,74 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 #pragma once
 
-#include <vector.h>
+class Vector;
 
-class Vector2D
+class Color
 {
 public:
-				Vector2D();
-				Vector2D(float x, float y);
-				Vector2D(const Vector& v);
+					Color();
+					Color(Vector v);
+					Color(int _r, int _g, int _b);
+					Color(int _r, int _g, int _b, int _a);
+					Color(float _r, float _g, float _b);
+					Color(float _r, float _g, float _b, float _a);
 
-public:
-	float	Length() const;
-	float	LengthSqr() const;
+	void			SetColor(int _r, int _g, int _b, int _a);
+	void			SetColor(float _r, float _g, float _b, float _a);
+	void			SetRed(int _r);
+	void			SetGreen(int _g);
+	void			SetBlue(int _b);
+	void			SetAlpha(int _a);
+	void			SetAlpha(float f);
 
-	const Vector2D	operator+(const Vector2D& v) const;
-	const Vector2D	operator-(const Vector2D& v) const;
-	const Vector2D	operator*(float s) const;
-	const Vector2D	operator/(float s) const;
+	void			SetHSL(float h, float s, float l);
+	void			GetHSL(float& h, float& s, float& l);
 
-	void	operator+=(const Vector2D &v);
-	void	operator-=(const Vector2D &v);
+	int				r() const { return red; };
+	int				g() const { return green; };
+	int				b() const { return blue; };
+	int				a() const { return alpha; };
 
-	float	x, y;
+	Color	operator-(void) const;
+
+	Color	operator+(const Color& v) const;
+	Color	operator-(const Color& v) const;
+	Color	operator*(float s) const;
+	Color	operator/(float s) const;
+
+	void	operator+=(const Color &v);
+	void	operator-=(const Color &v);
+	void	operator*=(float s);
+	void	operator/=(float s);
+
+	Color	operator*(const Color& v) const;
+
+	friend Color operator*( float f, const Color& v )
+	{
+		return Color( v.red*f, v.green*f, v.blue*f, v.alpha*f );
+	}
+
+	friend Color operator/( float f, const Color& v )
+	{
+		return Color( f/v.red, f/v.green, f/v.blue, f/v.alpha );
+	}
+
+	operator unsigned char*()
+	{
+		return(&red);
+	}
+
+	operator const unsigned char*() const
+	{
+		return(&red);
+	}
+
+private:
+	unsigned char	red;
+	unsigned char	green;
+	unsigned char	blue;
+	unsigned char	alpha;
 };
-
-inline Vector2D::Vector2D()
-	: x(0), y(0)
-{
-}
-
-inline Vector2D::Vector2D(float X, float Y)
-	: x(X), y(Y)
-{
-}
-
-inline Vector2D::Vector2D(const Vector& v)
-	: x(v.x), y(v.y)
-{
-}
-
-inline float Vector2D::Length() const
-{
-	return sqrt(x*x + y*y);
-}
-
-inline float Vector2D::LengthSqr() const
-{
-	return x*x + y*y;
-}
-
-inline const Vector2D Vector2D::operator+(const Vector2D& v) const
-{
-	return Vector2D(x+v.x, y+v.y);
-}
-
-inline const Vector2D Vector2D::operator-(const Vector2D& v) const
-{
-	return Vector2D(x-v.x, y-v.y);
-}
-
-inline const Vector2D Vector2D::operator*(float s) const
-{
-	return Vector2D(x*s, y*s);
-}
-
-inline const Vector2D Vector2D::operator/(float s) const
-{
-	return Vector2D(x/s, y/s);
-}
-
-inline void Vector2D::operator+=(const Vector2D& v)
-{
-	x += v.x;
-	y += v.y;
-}
-
-inline void Vector2D::operator-=(const Vector2D& v)
-{
-	x -= v.x;
-	y -= v.y;
-}
