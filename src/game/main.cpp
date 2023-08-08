@@ -19,7 +19,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include "renderer/application.h"
 #include "renderer/renderer.h"
 #include "renderer/renderingcontext.h"
-
+#include "math/euler.h"
+#include<iostream>
 // CGame is the "application" class. It creates the window and handles user input.
 // It extends CApplication, which does all of the dirty work. All we have to do
 // is override functions like KeyPress and KeyRelease, and CApplication will call
@@ -49,6 +50,10 @@ public:
 public:
 	virtual bool KeyPress(int c);
 	virtual void KeyRelease(int c);
+	virtual void MouseMotion(int x, int y);
+
+	int m_iLastMouseX;
+	int m_iLastMouseY;
 };
 
 // This class holds information for a single character - eg the position and velocity of the player
@@ -59,6 +64,8 @@ public:
 	Vector velocity;
 	Vector gravity;
 	Vector velocityGoal;
+	EAngle angView;
+
 };
 
 // We'll create a single character named "box"
@@ -119,6 +126,25 @@ void CGame::KeyRelease(int c)
 		CApplication::KeyPress(c);
 }
 
+
+void CGame::MouseMotion(int x, int y)
+{
+	int iMouseMovedX = x - m_iLastMouseX;
+	int iMouseMovedY = y - m_iLastMouseY;
+
+	float flSensitivity = 0.01f;
+	box.angView.pitch += iMouseMovedY*flSensitivity;
+	box.angView.yaw += iMouseMovedX*flSensitivity;
+	box.angView.Normalize();
+
+
+	std::cout << box.angView.toString() << std::endl;
+
+	
+	m_iLastMouseX = x;
+	m_iLastMouseY = y;
+}
+
 // In this Update() function we need to update all of our characters. Move them around or whatever we want to do.
 //https://www.youtube.com/watch?v=qJq7I2DLGzI&ab_channel=JorgeRodriguez
 void Update(float dt)
@@ -137,7 +163,7 @@ void Update(float dt)
 void Draw(CRenderer* pRenderer)
 {
 	// Tell the renderer how to set up the camera.
-	pRenderer->SetCameraPosition(box.position + Vector(0, 4, -6));
+	pRenderer->SetCameraPosition(box.position - box.angView.ToVector() * 5.0f);
 	pRenderer->SetCameraDirection(Vector(box.position - pRenderer->GetCameraPosition()).Normalized()); // Look at the box
 	pRenderer->SetCameraUp(Vector(0, 1, 0));
 	pRenderer->SetCameraFOV(90);
