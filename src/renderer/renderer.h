@@ -19,7 +19,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include <string>
 
-#include <vtb.h>
+ 
 
 #include <vector.h>
 #include <vector2d.h>
