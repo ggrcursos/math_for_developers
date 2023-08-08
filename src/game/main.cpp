@@ -24,6 +24,18 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 // It extends CApplication, which does all of the dirty work. All we have to do
 // is override functions like KeyPress and KeyRelease, and CApplication will call
 // those functions when the player presses a key on the keyboard.
+
+float Approach(float flGoal, float flCurrent, float dt)
+{
+	float flDifference = flGoal - flCurrent;
+
+	if(flDifference > dt)
+		return flCurrent + dt;
+	if(flDifference < -dt)
+		return flCurrent - dt;
+
+	return flGoal;
+}
 class CGame : public CApplication
 {
 	DECLARE_CLASS(CGame, CApplication);
@@ -46,6 +58,7 @@ public:
 	Point position;
 	Vector velocity;
 	Vector gravity;
+	Vector velocityGoal;
 };
 
 // We'll create a single character named "box"
@@ -56,22 +69,22 @@ bool CGame::KeyPress(int c)
 {
 	if (c == 'W')
 	{
-		box.velocity.z = 15;
+		box.velocityGoal.z = 15;
 		return true;
 	}
 	else if (c == 'A')
 	{
-		box.velocity.x = 15;
+		box.velocityGoal.x = 15;
 		return true;
 	}
 	else if (c == 'S')
 	{
-		box.velocity.z = -15;
+		box.velocityGoal.z = -15;
 		return true;
 	}
 	else if (c == 'D')
 	{
-		box.velocity.x = -15;
+		box.velocityGoal.x = -15;
 		return true;
 	}
 	else if (c == ' ')
@@ -88,28 +101,31 @@ void CGame::KeyRelease(int c)
 {
 	if (c == 'W')
 	{
-		box.velocity.z = 0;
+		box.velocityGoal.z = 0;
 	}
 	else if (c == 'A')
 	{
-		box.velocity.x = 0;
+		box.velocityGoal.x = 0;
 	}
 	else if (c == 'S')
 	{
-		box.velocity.z = 0;
+		box.velocityGoal.z = 0;
 	}
 	else if (c == 'D')
 	{
-		box.velocity.x = 0;
+		box.velocityGoal.x = 0;
 	}
 	else
 		CApplication::KeyPress(c);
 }
 
 // In this Update() function we need to update all of our characters. Move them around or whatever we want to do.
+//https://www.youtube.com/watch?v=qJq7I2DLGzI&ab_channel=JorgeRodriguez
 void Update(float dt)
 {
 	// Update position and velocity.
+	box.velocity.x = Approach(box.velocityGoal.x, box.velocity.x, dt * 70);
+	box.velocity.z = Approach(box.velocityGoal.z, box.velocity.z, dt * 70);
 	box.position = box.position + box.velocity * dt;
 	box.velocity = box.velocity + box.gravity * dt;
 
