@@ -126,25 +126,25 @@ CRenderingContext::~CRenderingContext()
 	}
 	else
 	{
-		GLCall(glActiveTexture(GL_TEXTURE0));
-		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
-		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if (m_pRenderer)
-			GLCall(glViewport(0, 0, (GLsizei)m_pRenderer->m_iWidth, (GLsizei)m_pRenderer->m_iHeight));
+			glViewport(0, 0, (GLsizei)m_pRenderer->m_iWidth, (GLsizei)m_pRenderer->m_iHeight);
 		else
-			GLCall(glViewport(0, 0, (GLsizei)Application()->GetWindowWidth(), (GLsizei)Application()->GetWindowHeight()));
+			glViewport(0, 0, (GLsizei)Application()->GetWindowWidth(), (GLsizei)Application()->GetWindowHeight());
 
-		GLCall(glUseProgram(0));
+		glUseProgram(0);
 
-		GLCall(glDisablei(GL_BLEND, 0));
+		glDisablei(GL_BLEND, 0);
 
-		GLCall(glDepthMask(true));
-		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glEnable(GL_CULL_FACE));
-		GLCall(glDepthFunc(GL_LESS));
+		glDepthMask(true);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glDepthFunc(GL_LESS);
 
-		GLCall(glFrontFace(GL_CCW));
+		glFrontFace(GL_CCW);
 	}
 }
 
@@ -237,42 +237,42 @@ void CRenderingContext::SetBlend(blendtype_t eBlend)
 {
 	if (eBlend)
 	{
-		GLCall(glEnablei(GL_BLEND, 0));
+		glEnablei(GL_BLEND, 0);
 
 		if (eBlend == BLEND_ALPHA)
-			GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		else if (eBlend == BLEND_ADDITIVE)
-			GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		else if (eBlend == BLEND_BOTH)
-			GLCall(glBlendFunc(GL_ONE, GL_ONE));
+			glBlendFunc(GL_ONE, GL_ONE);
 	}
 	else
-		GLCall(glDisablei(GL_BLEND, 0));
+		glDisablei(GL_BLEND, 0);
 
 	GetContext().m_eBlend = eBlend;
 }
 
 void CRenderingContext::SetDepthMask(bool bDepthMask)
 {
-	GLCall(glDepthMask(bDepthMask));
+	glDepthMask(bDepthMask);
 	GetContext().m_bDepthMask = bDepthMask;
 }
 
 void CRenderingContext::SetDepthTest(bool bDepthTest)
 {
 	if (bDepthTest)
-		GLCall(glEnable(GL_DEPTH_TEST));
+		glEnable(GL_DEPTH_TEST);
 	else
-		GLCall(glDisable(GL_DEPTH_TEST));
+		glDisable(GL_DEPTH_TEST);
 	GetContext().m_bDepthTest = bDepthTest;
 }
 
 void CRenderingContext::SetDepthFunction(depth_function_t eDepthFunction)
 {
 	if (eDepthFunction == DF_LEQUAL)
-		GLCall(glDepthFunc(GL_LEQUAL));
+		glDepthFunc(GL_LEQUAL);
 	else if (eDepthFunction == DF_LESS)
-		GLCall(glDepthFunc(GL_LESS));
+		glDepthFunc(GL_LESS);
 
 	GetContext().m_eDepthFunction = eDepthFunction;
 }
@@ -280,27 +280,27 @@ void CRenderingContext::SetDepthFunction(depth_function_t eDepthFunction)
 void CRenderingContext::SetBackCulling(bool bCull)
 {
 	if (bCull)
-		GLCall(glEnable(GL_CULL_FACE));
+		glEnable(GL_CULL_FACE);
 	else
-		GLCall(glDisable(GL_CULL_FACE));
+		glDisable(GL_CULL_FACE);
 	GetContext().m_bCull = bCull;
 }
 
 void CRenderingContext::SetWinding(bool bWinding)
 {
 	GetContext().m_bWinding = bWinding;
-	GLCall(glFrontFace(bWinding?GL_CCW:GL_CW));
+	glFrontFace(bWinding?GL_CCW:GL_CW);
 }
 
 void CRenderingContext::ClearColor(const ::Color& clrClear)
 {
-	GLCall(glClearColor((float)(clrClear.r())/255, (float)(clrClear.g())/255, (float)(clrClear.b())/255, (float)(clrClear.a())/255));
-	GLCall(glClear(GL_COLOR_BUFFER_BIT));
+	glClearColor((float)(clrClear.r())/255, (float)(clrClear.g())/255, (float)(clrClear.b())/255, (float)(clrClear.a())/255);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void CRenderingContext::ClearDepth()
 {
-	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void CRenderingContext::RenderWireBox(const Vector& vecMins, const Vector& vecMaxs)
@@ -482,14 +482,14 @@ void CRenderingContext::UseProgram(class CShader* pShader)
 	{
 		oContext.m_szProgram[0] = '\0';
 		m_iProgram = 0;
-		GLCall(glUseProgram(0));
+		glUseProgram(0);
 		return;
 	}
 
 	strncpy(oContext.m_szProgram, pShader->m_sName.c_str(), PROGRAM_LEN);
 
 	m_iProgram = m_pShader->m_iProgram;
-	GLCall(glUseProgram((GLuint)m_pShader->m_iProgram));
+	glUseProgram((GLuint)m_pShader->m_iProgram);
 
 	oContext.m_bProjectionUpdated = false;
 	oContext.m_bViewUpdated = false;
@@ -498,28 +498,28 @@ void CRenderingContext::UseProgram(class CShader* pShader)
 void CRenderingContext::SetUniform(const char* pszName, int iValue)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
-	GLCall(glUniform1i(iUniform, iValue));
+	glUniform1i(iUniform, iValue);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, float flValue)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniform1f(iUniform, flValue));
+	glUniform1f(iUniform, flValue);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, const Vector& vecValue)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniform3fv(iUniform, 1, &vecValue.x));
+	glUniform3fv(iUniform, 1, &vecValue.x);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, const Vector4D& vecValue)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniform4fv(iUniform, 1, vecValue));
+	glUniform4fv(iUniform, 1, vecValue);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, const ::Color& clrValue)
@@ -527,31 +527,31 @@ void CRenderingContext::SetUniform(const char* pszName, const ::Color& clrValue)
 	Vector4D vecValue(clrValue);  // Convert it to a vector so it's a 0-1 value and not a 0-255 value
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniform4fv(iUniform, 1, &vecValue.x));
+	glUniform4fv(iUniform, 1, &vecValue.x);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, const Matrix4x4& mValue)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniformMatrix4fv(iUniform, 1, false, mValue));
+	glUniformMatrix4fv(iUniform, 1, false, mValue);
 }
 
 void CRenderingContext::SetUniform(const char* pszName, size_t iSize, const float* aflValues)
 {
 	int iUniform = glGetUniformLocation((GLuint)m_iProgram, pszName);
 	TAssert(iUniform > 0);
-	GLCall(glUniform1fv(iUniform, iSize, aflValues));
+	glUniform1fv(iUniform, iSize, aflValues);
 }
 
 void CRenderingContext::BindTexture(size_t iTexture, int iChannel, bool bMultisample)
 {
-	GLCall(glActiveTexture(GL_TEXTURE0+iChannel));
+	glActiveTexture(GL_TEXTURE0+iChannel);
 
 	if (bMultisample)
-		GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, (GLuint)iTexture));
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, (GLuint)iTexture);
 	else
-		GLCall(glBindTexture(GL_TEXTURE_2D, (GLuint)iTexture));
+		glBindTexture(GL_TEXTURE_2D, (GLuint)iTexture);
 }
 
 void CRenderingContext::SetColor(const ::Color& c)
@@ -645,7 +645,7 @@ void CRenderingContext::BeginRenderPoints(float flSize)
 	m_bNormal = false;
 	m_bTangents = false;
 
-	GLCall(glPointSize( flSize ));
+	glPointSize( flSize );
 	m_iDrawMode = GL_POINTS;
 }
 
@@ -744,10 +744,10 @@ void CRenderingContext::EndRender()
 
 	oContext.m_bProjectionUpdated = oContext.m_bViewUpdated = oContext.m_bTransformUpdated = true;
 
-	GLCall(glBindVertexArray(m_pRenderer->m_default_vao));
+	glBindVertexArray(m_pRenderer->m_default_vao);
 
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_pRenderer->m_dynamic_mesh_vbo));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, GLsizeiptr((size_t)s_dynamic_verts.size() * sizeof(float)), s_dynamic_verts.data(), GL_STATIC_DRAW));
+	glBindBuffer(GL_ARRAY_BUFFER, m_pRenderer->m_dynamic_mesh_vbo);
+	glBufferData(GL_ARRAY_BUFFER, GLsizeiptr((size_t)s_dynamic_verts.size() * sizeof(float)), s_dynamic_verts.data(), GL_STATIC_DRAW);
 
 	int stride = 3 * sizeof(float);
 	int position_offset = 0;
@@ -786,46 +786,46 @@ void CRenderingContext::EndRender()
 		{
 			if (m_pShader->m_aiTexCoordAttributes[i] != ~0)
 			{
-				GLCall(glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]));
-				GLCall(glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[i], 2, GL_FLOAT, false, stride, BUFFER_OFFSET(texcoord_offset)));
+				glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]);
+				glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[i], 2, GL_FLOAT, false, stride, BUFFER_OFFSET(texcoord_offset));
 			}
 		}
 	}
 
 	if (m_bNormal && m_pShader->m_iNormalAttribute != ~0)
 	{
-		GLCall(glEnableVertexAttribArray(m_pShader->m_iNormalAttribute));
-		GLCall(glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(normal_offset)));
+		glEnableVertexAttribArray(m_pShader->m_iNormalAttribute);
+		glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(normal_offset));
 	}
 
 	if (m_bTangents && m_pShader->m_iTangentAttribute != ~0 && m_pShader->m_iBitangentAttribute != ~0)
 	{
-		GLCall(glEnableVertexAttribArray(m_pShader->m_iTangentAttribute));
-		GLCall(glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(tangent_offset)));
+		glEnableVertexAttribArray(m_pShader->m_iTangentAttribute);
+		glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(tangent_offset));
 
-		GLCall(glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute));
-		GLCall(glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(bitangent_offset)));
+		glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute);
+		glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(bitangent_offset));
 	}
 
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iPositionAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(0)));
+	glEnableVertexAttribArray(m_pShader->m_iPositionAttribute);
+	glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, stride, BUFFER_OFFSET(0));
 
-	GLCall(glDrawArrays(m_iDrawMode, 0, m_num_verts));
+	glDrawArrays(m_iDrawMode, 0, m_num_verts);
 
-	GLCall(glDisableVertexAttribArray(m_pShader->m_iPositionAttribute));
+	glDisableVertexAttribArray(m_pShader->m_iPositionAttribute);
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
 	{
 		if (m_pShader->m_aiTexCoordAttributes[i] != ~0)
-			GLCall(glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]));
+			glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]);
 	}
 	if (m_pShader->m_iNormalAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iNormalAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iNormalAttribute);
 	if (m_pShader->m_iTangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iTangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iTangentAttribute);
 	if (m_pShader->m_iBitangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute);
 	if (m_pShader->m_iColorAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iColorAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iColorAttribute);
 }
 
 void CRenderingContext::CreateVBO(size_t& iVBO, size_t& iVBOSize)
@@ -845,7 +845,7 @@ void CRenderingContext::CreateVBO(size_t& iVBO, size_t& iVBOSize)
 void CRenderingContext::BeginRenderVertexArray(size_t iBuffer)
 {
 	if (iBuffer)
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, iBuffer));
+		glBindBuffer(GL_ARRAY_BUFFER, iBuffer);
 }
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -853,16 +853,16 @@ void CRenderingContext::BeginRenderVertexArray(size_t iBuffer)
 void CRenderingContext::SetPositionBuffer(float* pflBuffer, size_t iStride)
 {
 	TAssert(m_pShader->m_iPositionAttribute != ~0);
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iPositionAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, iStride, pflBuffer));
+	glEnableVertexAttribArray(m_pShader->m_iPositionAttribute);
+	glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, iStride, pflBuffer);
 }
 
 void CRenderingContext::SetPositionBuffer(size_t iOffset, size_t iStride)
 {
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
 	TAssert(m_pShader->m_iPositionAttribute != ~0);
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iPositionAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(m_pShader->m_iPositionAttribute);
+	glVertexAttribPointer(m_pShader->m_iPositionAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::SetNormalsBuffer(float* pflBuffer, size_t iStride)
@@ -870,8 +870,8 @@ void CRenderingContext::SetNormalsBuffer(float* pflBuffer, size_t iStride)
 	if (m_pShader->m_iNormalAttribute == ~0)
 		return;
 
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iNormalAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, iStride, pflBuffer));
+	glEnableVertexAttribArray(m_pShader->m_iNormalAttribute);
+	glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, iStride, pflBuffer);
 }
 
 void CRenderingContext::SetNormalsBuffer(size_t iOffset, size_t iStride)
@@ -880,8 +880,8 @@ void CRenderingContext::SetNormalsBuffer(size_t iOffset, size_t iStride)
 		return;
 
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iNormalAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(m_pShader->m_iNormalAttribute);
+	glVertexAttribPointer(m_pShader->m_iNormalAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::SetTangentsBuffer(float* pflBuffer, size_t iStride)
@@ -889,8 +889,8 @@ void CRenderingContext::SetTangentsBuffer(float* pflBuffer, size_t iStride)
 	if (m_pShader->m_iTangentAttribute == ~0)
 		return;
 
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iTangentAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, iStride, pflBuffer));
+	glEnableVertexAttribArray(m_pShader->m_iTangentAttribute);
+	glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, iStride, pflBuffer);
 }
 
 void CRenderingContext::SetTangentsBuffer(size_t iOffset, size_t iStride)
@@ -899,8 +899,8 @@ void CRenderingContext::SetTangentsBuffer(size_t iOffset, size_t iStride)
 		return;
 
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iTangentAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(m_pShader->m_iTangentAttribute);
+	glVertexAttribPointer(m_pShader->m_iTangentAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::SetBitangentsBuffer(float* pflBuffer, size_t iStride)
@@ -908,8 +908,8 @@ void CRenderingContext::SetBitangentsBuffer(float* pflBuffer, size_t iStride)
 	if (m_pShader->m_iBitangentAttribute == ~0)
 		return;
 
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, iStride, pflBuffer));
+	glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute);
+	glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, iStride, pflBuffer);
 }
 
 void CRenderingContext::SetBitangentsBuffer(size_t iOffset, size_t iStride)
@@ -918,8 +918,8 @@ void CRenderingContext::SetBitangentsBuffer(size_t iOffset, size_t iStride)
 		return;
 
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
-	GLCall(glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute));
-	GLCall(glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(m_pShader->m_iBitangentAttribute);
+	glVertexAttribPointer(m_pShader->m_iBitangentAttribute, 3, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::SetTexCoordBuffer(float* pflBuffer, size_t iStride, size_t iChannel)
@@ -929,8 +929,8 @@ void CRenderingContext::SetTexCoordBuffer(float* pflBuffer, size_t iStride, size
 	if (m_pShader->m_aiTexCoordAttributes[iChannel] == ~0)
 		return;
 
-	GLCall(glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[iChannel]));
-	GLCall(glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[iChannel], 2, GL_FLOAT, false, iStride, pflBuffer));
+	glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[iChannel]);
+	glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[iChannel], 2, GL_FLOAT, false, iStride, pflBuffer);
 }
 
 void CRenderingContext::SetTexCoordBuffer(size_t iOffset, size_t iStride, size_t iChannel)
@@ -941,8 +941,8 @@ void CRenderingContext::SetTexCoordBuffer(size_t iOffset, size_t iStride, size_t
 		return;
 
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
-	GLCall(glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[iChannel]));
-	GLCall(glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[iChannel], 2, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[iChannel]);
+	glVertexAttribPointer(m_pShader->m_aiTexCoordAttributes[iChannel], 2, GL_FLOAT, false, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::SetCustomIntBuffer(const char* pszName, size_t iSize, size_t iOffset, size_t iStride)
@@ -954,8 +954,8 @@ void CRenderingContext::SetCustomIntBuffer(const char* pszName, size_t iSize, si
 		return;
 
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
-	GLCall(glEnableVertexAttribArray(iAttribute));
-	GLCall(glVertexAttribIPointer(iAttribute, iSize, GL_INT, iStride, BUFFER_OFFSET(iOffset)));
+	glEnableVertexAttribArray(iAttribute);
+	glVertexAttribIPointer(iAttribute, iSize, GL_INT, iStride, BUFFER_OFFSET(iOffset));
 }
 
 void CRenderingContext::EndRenderVertexArray(size_t iVertices, bool bWireframe)
@@ -975,28 +975,28 @@ void CRenderingContext::EndRenderVertexArray(size_t iVertices, bool bWireframe)
 
 	if (bWireframe)
 	{
-		GLCall(glLineWidth(1));
-		GLCall(glDrawArrays(GL_LINES, 0, iVertices));
+		glLineWidth(1);
+		glDrawArrays(GL_LINES, 0, iVertices);
 	}
 	else
-		GLCall(glDrawArrays(GL_TRIANGLES, 0, iVertices));
+		glDrawArrays(GL_TRIANGLES, 0, iVertices);
 
-	GLCall(glDisableVertexAttribArray(m_pShader->m_iPositionAttribute));
+	glDisableVertexAttribArray(m_pShader->m_iPositionAttribute);
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
 	{
 		if (m_pShader->m_aiTexCoordAttributes[i] != ~0)
-			GLCall(glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]));
+			glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]);
 	}
 	if (m_pShader->m_iNormalAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iNormalAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iNormalAttribute);
 	if (m_pShader->m_iTangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iTangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iTangentAttribute);
 	if (m_pShader->m_iBitangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute);
 	if (m_pShader->m_iColorAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iColorAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iColorAttribute);
 
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void CRenderingContext::EndRenderVertexArrayTriangles(size_t iTriangles, int* piIndices)
@@ -1014,24 +1014,24 @@ void CRenderingContext::EndRenderVertexArrayTriangles(size_t iTriangles, int* pi
 
 	oContext.m_bProjectionUpdated = oContext.m_bViewUpdated = oContext.m_bTransformUpdated = true;
 
-	GLCall(glDrawElements(GL_TRIANGLES, iTriangles*3, GL_UNSIGNED_INT, piIndices));
+	glDrawElements(GL_TRIANGLES, iTriangles*3, GL_UNSIGNED_INT, piIndices);
 
-	GLCall(glDisableVertexAttribArray(m_pShader->m_iPositionAttribute));
+	glDisableVertexAttribArray(m_pShader->m_iPositionAttribute);
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
 	{
 		if (m_pShader->m_aiTexCoordAttributes[i] != ~0)
-			GLCall(glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]));
+			glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]);
 	}
 	if (m_pShader->m_iNormalAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iNormalAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iNormalAttribute);
 	if (m_pShader->m_iTangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iTangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iTangentAttribute);
 	if (m_pShader->m_iBitangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute);
 	if (m_pShader->m_iColorAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iColorAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iColorAttribute);
 
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void CRenderingContext::EndRenderVertexArrayIndexed(size_t iBuffer, size_t iVertices)
@@ -1049,38 +1049,38 @@ void CRenderingContext::EndRenderVertexArrayIndexed(size_t iBuffer, size_t iVert
 
 	oContext.m_bProjectionUpdated = oContext.m_bViewUpdated = oContext.m_bTransformUpdated = true;
 
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
 
 	bool bWireframe = false;
-	GLCall(glDrawElements(bWireframe?GL_LINES:GL_TRIANGLES, iVertices, GL_UNSIGNED_INT, nullptr));
+	glDrawElements(bWireframe?GL_LINES:GL_TRIANGLES, iVertices, GL_UNSIGNED_INT, nullptr);
 
-	GLCall(glDisableVertexAttribArray(m_pShader->m_iPositionAttribute));
+	glDisableVertexAttribArray(m_pShader->m_iPositionAttribute);
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
 	{
 		if (m_pShader->m_aiTexCoordAttributes[i] != ~0)
-			GLCall(glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]));
+			glDisableVertexAttribArray(m_pShader->m_aiTexCoordAttributes[i]);
 	}
 	if (m_pShader->m_iNormalAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iNormalAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iNormalAttribute);
 	if (m_pShader->m_iTangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iTangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iTangentAttribute);
 	if (m_pShader->m_iBitangentAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iBitangentAttribute);
 	if (m_pShader->m_iColorAttribute != ~0)
-		GLCall(glDisableVertexAttribArray(m_pShader->m_iColorAttribute));
+		glDisableVertexAttribArray(m_pShader->m_iColorAttribute);
 
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void CRenderingContext::ReadPixels(size_t x, size_t y, size_t w, size_t h, Vector4D* pvecPixels)
 {
-	GLCall(glReadPixels(x, y, w, h, GL_RGBA, GL_FLOAT, pvecPixels));
+	glReadPixels(x, y, w, h, GL_RGBA, GL_FLOAT, pvecPixels);
 }
 
 void CRenderingContext::Finish()
 {
-	GLCall(glFinish());
+	glFinish();
 }
 
 CRenderingContext::CRenderContext::CRenderContext()

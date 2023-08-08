@@ -26,21 +26,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "render_common.h"
 
-#define CheckGLReturn() \
-do { \
-	GLenum e = glGetError(); \
-	VAssert(e == GL_NO_ERROR); \
-	VPRAGMA_WARNING_PUSH \
-	VPRAGMA_WARNING_DISABLE(4127) /* conditional expression is constant */ \
-} while (0) \
-VPRAGMA_WARNING_POP \
-
-#define GLCall(x) \
-	do { (x); CheckGLReturn(); } while (0)
-
-#define GLCallReturn(x) \
-	(x); do { CheckGLReturn(); } while (0)
-
+ 
 typedef enum
 {
 	FB_DEPTH = (1<<0),
