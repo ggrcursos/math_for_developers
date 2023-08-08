@@ -49,13 +49,6 @@ public:
 	virtual void	Initialize();
 	void			LoadShaders();
 
- 
-	int  GetBunnyVerts();
-	int  GetBunnyNumVerts();
-	int  BunnyPositionOffsetBytes();
-	int  BunnyNormalOffsetBytes();
-	int  BunnyStrideBytes();
-
 	virtual void	WindowResize(int w, int h);
 
 	virtual void	StartRendering(class CRenderingContext* pContext);
@@ -105,7 +98,7 @@ public:
 	static size_t   LoadTextureIntoGL(unsigned char* pclrData, int x, int y, int iClamp, bool bNearestFiltering = false);
 	static size_t   LoadTextureIntoGL(Vector* pvecData, int x, int y, int iClamp, bool bMipMaps);
 
-public:
+protected:
 	size_t			m_iWidth;
 	size_t			m_iHeight;
 
@@ -132,9 +125,6 @@ public:
 
 	bool			m_bUseMultisampleTextures;
 	int				m_iScreenSamples;
-
-	int m_iBunnyVerts;
-	int m_iBunnyNumVerts;
 
 	static CRenderer* s_pRenderer;
 	static size_t	s_iTexturesLoaded;

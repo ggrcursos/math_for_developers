@@ -239,8 +239,6 @@ bool CRenderer::HardwareSupported()
 
 	glShaderSource(iVShader, 1, &pszVertexShader, NULL);
 	glCompileShader(iVShader);
-	GLchar info_log[512];
-	glGetShaderInfoLog(iVShader, sizeof(info_log), NULL, info_log);
 
 	int iVertexCompiled;
 	glGetShaderiv(iVShader, GL_COMPILE_STATUS, &iVertexCompiled);
@@ -325,14 +323,6 @@ void CRenderer::UnloadVertexDataFromGL(size_t iBuffer)
 
 size_t CRenderer::LoadTextureIntoGL(string sFilename, int iClamp)
 {
-
-    char buffer[FILENAME_MAX];
-    if (getcwd(buffer, sizeof(buffer)) != nullptr) {
-        std::cout << "Diretório atual: " << buffer << std::endl;
-    } else {
-        std::cerr << "Erro ao obter o diretório atual." << std::endl;
-    }
-
 	if (!sFilename.length())
 		return 0;
 
