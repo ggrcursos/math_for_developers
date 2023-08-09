@@ -47,6 +47,22 @@ float Vector::LengthSqr() const
 	return (x*x + y*y + z*z);
 }
 
+void Vector::Normalize()
+{
+	(*this) = (*this) / Length();
+}
+
+Vector Vector::Cross(const Vector& v ) const 
+{
+		Vector c;
+
+	c.x = y*v.z - z*v.y;
+	c.y = z*v.x - x*v.z;
+	c.z = x*v.y - y*v.x;
+
+	return c;
+}
+
 Vector operator-(Point a, Point b)
 {
 	Vector v;

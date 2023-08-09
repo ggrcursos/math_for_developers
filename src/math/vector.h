@@ -24,6 +24,8 @@ public:
 	Vector operator/(float s) const;
 
 	Vector Normalized() const;
+	void Normalize();
+	Vector  Cross(const Vector& ) const ;
 
 public:
 	float x, y, z;

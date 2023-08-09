@@ -3,4 +3,4 @@
 
 Cross Product
 
-1 - Euler - https://www.youtube.com/watch?v=zZM2uUkEoFw&ab_channel=JorgeRodriguez
+1 - Cross - https://www.youtube.com/watch?v=FT7MShdqK6w&ab_channel=JorgeRodriguez
