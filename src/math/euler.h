@@ -5,35 +5,30 @@
 
 
 class Vector;
+
 class EAngle
 {
-    public:
-    EAngle()
-    {
-        pitch = yaw = roll = 0.0f;
-    }
+public:
+	EAngle()
+	{
+		p = y = r = 0;
+	}
 
-    std::string toString()
-    {
-        return "pitch: "+ std::to_string(pitch) + 
-        "  yaw: "+ std::to_string(yaw) + 
-        "  roll: "+ std::to_string(roll) ;
-    }
+	EAngle(float pitch, float yaw, float roll)
+	{
+		p = pitch;
+		y = yaw;
+		r = roll;
+	}
 
-    EAngle(float _pitch, float _yaw, float _roll)
-    {   
-        pitch = _pitch;
-        yaw = _yaw;
-        roll = _roll;
-    }
+public:
+	Vector ToVector() const;
 
-    Vector ToVector() const;
-    void Normalize();
+	void Normalize();
 
-    public:
-    float pitch;
-    float yaw;
-    float roll;
-
+public:
+	float p;
+	float y;
+	float r;
 };
 #endif

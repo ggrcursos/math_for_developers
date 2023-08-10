@@ -25,10 +25,17 @@ public:
 
 	Vector Normalized() const;
 	void Normalize();
-	Vector  Cross(const Vector& ) const ;
+
+	float  Dot(const Vector& v) const;
+	Vector Cross(const Vector& v) const;
 
 public:
-	float x, y, z;
+	union {
+		struct {
+			float x, y, z;
+		};
+		float v[3];
+	};
 };
 
 class Point
@@ -42,8 +49,16 @@ public:
 		z = Z;
 	}
 
+	Point(const Vector& v)
+	{
+		x = v.x;
+		y = v.y;
+		z = v.z;
+	}
+
 	Point operator+(const Vector& v) const;
 	Point operator-(const Vector& v) const;
 
 	float x, y, z;
 };
+
