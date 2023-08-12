@@ -131,9 +131,9 @@ CRenderingContext::~CRenderingContext()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if (m_pRenderer)
-			glViewport(0, 0, (GLsizei)m_pRenderer->m_iWidth, (GLsizei)m_pRenderer->m_iHeight);
+			glViewport(0,0, (GLsizei)m_pRenderer->m_iWidth*FACTOR_VIEW_PORT, (GLsizei)m_pRenderer->m_iHeight*FACTOR_VIEW_PORT);
 		else
-			glViewport(0, 0, (GLsizei)Application()->GetWindowWidth(), (GLsizei)Application()->GetWindowHeight());
+			glViewport(0, 0, (GLsizei)Application()->GetWindowWidth()*FACTOR_VIEW_PORT, (GLsizei)Application()->GetWindowHeight()*FACTOR_VIEW_PORT);
 
 		glUseProgram(0);
 

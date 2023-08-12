@@ -37,7 +37,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
-   // glViewport(0, 0, width, height);
+    glViewport(0, 0, width*FACTOR_VIEW_PORT, height*FACTOR_VIEW_PORT);
 }
 // #include "glad.h"
 CApplication* CApplication::s_pApplication = NULL;

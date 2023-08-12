@@ -126,7 +126,7 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 		m_aflProjection[i] = ((float*)pContext->GetProjection())[i];
 	}
 
-	glViewport(0, 0, (GLsizei)m_iWidth, (GLsizei)m_iHeight);
+	glViewport(0, 0, (GLsizei)m_iWidth*FACTOR_VIEW_PORT, (GLsizei)m_iHeight*FACTOR_VIEW_PORT);
 
 	if (m_iScreenSamples)
 		glEnable(GL_MULTISAMPLE);

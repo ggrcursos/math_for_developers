@@ -1,4 +1,4 @@
-# Desmistificando a Matemática e a Física
+# 2 - Desmistificando a Matemática e a Física
 
 ## Objetivo Principal deste Material
 
@@ -10,9 +10,12 @@
 
 Possivelmente, assim como eu, essas e outras perguntas não foram respondidas na escola primária e, mesmo no ensino superior, ao contrário, muitas vezes criava-se uma aura mística em torno de assuntos tão triviais. Com este curso, muitas das perguntas não apenas serão respondidas, mas também demonstradas na prática, sem a rigidez de uma aula monótona e sem a insegurança de repassar conhecimento. Divirta-se.
 
-Template básico para o curso Matemática para Desenvolvedores. Este primeiro exemplo é completado conforme a imagem abaixo:
+# 2 - Desenhando na tela
 
-![Exemplo](images/basic_window.png)
+Movimentando um jogador no stage com uma camera fixa, e renderizando alguns inimigos.
+com o teclado é possivel movimentar o personager por todo o cenário.
+
+![Exemplo](images/first_example.png)
 
 # Tecnologias Utilizadas:
 

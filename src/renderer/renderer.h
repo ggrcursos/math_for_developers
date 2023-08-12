@@ -26,7 +26,12 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "render_common.h"
 
- 
+
+#ifdef __APPLE__
+	#define FACTOR_VIEW_PORT  2
+#elif
+	#define FACTOR_VIEW_PORT  1
+#endif
 typedef enum
 {
 	FB_DEPTH = (1<<0),
